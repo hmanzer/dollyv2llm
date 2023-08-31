@@ -1,0 +1,40 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: dolly
+  labels:
+    name: dolly
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dollyv2llm
+  namespace: dolly
+  labels:
+    app: dollyv2llm
+spec:
+  selector:
+    matchLabels:
+      name: dollyv2llm
+  template:
+    metadata:
+      labels:
+        name: dollyv2llm
+    spec:
+      containers:
+      - name: dolly
+        image: docker.io/hmanzer/dolly:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dollysvc
+  namespace: dolly
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    name: dollyv2llm
